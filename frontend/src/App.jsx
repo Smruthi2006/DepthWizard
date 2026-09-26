@@ -25,7 +25,8 @@ import {
   CloudSun,
   X,
   Activity,
-  ShieldCheck
+  ShieldCheck,
+  ClipboardPaste
 } from 'lucide-react';
 
 const API_BASE = 'http://localhost:8000';
@@ -51,10 +52,45 @@ export default function App() {
   const [inspectedPoint, setInspectedPoint] = useState(null);
   const [profileData, setProfileData] = useState(null);
 
-  // Modals
+  // Modals & Clipboard State
   const [showUpload, setShowUpload] = useState(false);
   const [showExport, setShowExport] = useState(false);
   const [showManual, setShowManual] = useState(false);
+  const [pastedInitialFile, setPastedInitialFile] = useState(null);
+  const [toastMessage, setToastMessage] = useState(null);
+
+  // Global Ctrl+V Clipboard paste listener
+  useEffect(() => {
+    const handleGlobalPaste = (e) => {
+      // Don't intercept if user is typing in an input
+      if (['INPUT', 'SELECT', 'TEXTAREA'].includes(document.activeElement?.tagName)) {
+        return;
+      }
+      if (e.clipboardData && e.clipboardData.items) {
+        for (let i = 0; i < e.clipboardData.items.length; i++) {
+          const item = e.clipboardData.items[i];
+          if (item.type.indexOf('image') !== -1) {
+            const file = item.getAsFile();
+            if (file) {
+              e.preventDefault();
+              setPastedInitialFile(file);
+              setShowUpload(true);
+              showToast('Image pasted from clipboard! Ready to process.');
+              break;
+            }
+          }
+        }
+      }
+    };
+
+    window.addEventListener('paste', handleGlobalPaste);
+    return () => window.removeEventListener('paste', handleGlobalPaste);
+  }, []);
+
+  const showToast = (msg) => {
+    setToastMessage(msg);
+    setTimeout(() => setToastMessage(null), 3500);
+  };
 
   // Fetch status and sample manifest
   useEffect(() => {
@@ -68,7 +104,6 @@ export default function App() {
       .then((data) => {
         if (data.samples) {
           setSamples(data.samples);
-          // Process default 'urban' scene
           processScene('urban', 'dem');
         }
       })
@@ -91,7 +126,6 @@ export default function App() {
         })
       });
       const data = await res.json();
-      // Format texture URLs with API_BASE
       const fullTextures = {};
       Object.keys(data.textures).forEach((k) => {
         fullTextures[k] = `${API_BASE}${data.textures[k]}`;
@@ -128,7 +162,6 @@ export default function App() {
   // 2-Point Measure Completion
   const handleMeasureComplete = async (meas) => {
     setMeasurementResult(meas);
-    // Request elevation transect profile
     if (!currentSession) return;
     try {
       const res = await fetch(`${API_BASE}/api/analyze/profile`, {
@@ -167,14 +200,48 @@ export default function App() {
       {/* Top Navigation */}
       <NavigationHeader
         backendStatus={backendStatus}
-        onUploadClick={() => setShowUpload(true)}
+        onUploadClick={() => { setPastedInitialFile(null); setShowUpload(true); }}
         onExportClick={() => setShowExport(true)}
         onHelpClick={() => setShowManual(true)}
       />
 
       <div className="workspace-area">
-        {/* Left Sidebar: Benchmark Selection & Rendering Controls */}
+        {/* Left Sidebar */}
         <aside className="left-sidebar">
+          {/* Current Scene Telemetry (Cleanly docked in sidebar, zero viewport overlap) */}
+          {currentSession?.metadata && (
+            <div className="sidebar-section" style={{ background: 'rgba(0, 229, 255, 0.02)' }}>
+              <div className="section-title">
+                <Activity size={14} color="var(--accent-cyan)" />
+                <span>Active Scene Telemetry</span>
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', fontSize: '0.74rem', fontFamily: 'var(--font-mono)' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                  <span style={{ color: 'var(--text-dim)' }}>SCENE:</span>
+                  <span style={{ color: 'var(--accent-cyan)', fontWeight: '700' }}>
+                    {currentSession.sample_id?.toUpperCase() || 'CUSTOM'}
+                  </span>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                  <span style={{ color: 'var(--text-dim)' }}>GSD:</span>
+                  <span style={{ color: '#fff' }}>{currentSession.metadata.gsd_m}m / px</span>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                  <span style={{ color: 'var(--text-dim)' }}>ELEV RANGE:</span>
+                  <span style={{ color: '#fff' }}>{currentSession.metadata.elevation_min}m - {currentSession.metadata.elevation_max}m</span>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                  <span style={{ color: 'var(--text-dim)' }}>MAX STRUCTURE:</span>
+                  <span style={{ color: 'var(--accent-saffron)', fontWeight: '700' }}>{currentSession.metadata.max_structure_height_m}m</span>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                  <span style={{ color: 'var(--text-dim)' }}>INFERENCE:</span>
+                  <span style={{ color: 'var(--accent-green)' }}>{currentSession.metadata.inference_time_s}s</span>
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* Benchmark Landscapes */}
           <div className="sidebar-section">
             <div className="section-title">
@@ -297,9 +364,9 @@ export default function App() {
           </div>
         </aside>
 
-        {/* Center 3D Interactive Viewport */}
+        {/* Center 3D Interactive Viewport (Zero Overlaps) */}
         <main className="viewport-container">
-          {/* Top Layer Switcher Dock */}
+          {/* Top Layer Switcher Dock (Clean, centered, zero obstruction) */}
           <div className="floating-overlay-top">
             <button
               className={`overlay-btn ${activeLayer === 'optical' ? 'active' : ''}`}
@@ -340,68 +407,11 @@ export default function App() {
             )}
           </div>
 
-          {/* Telemetry HUD (Top-Left) */}
-          {currentSession?.metadata && (
-            <div className="hud-telemetry">
-              <div className="hud-item">
-                <span>SCENE:</span>
-                <span className="hud-val">{currentSession.sample_id?.toUpperCase() || 'CUSTOM'}</span>
-              </div>
-              <div className="hud-item">
-                <span>GSD:</span>
-                <span className="hud-val">{currentSession.metadata.gsd_m}m / px</span>
-              </div>
-              <div className="hud-item">
-                <span>CRS:</span>
-                <span className="hud-val">{currentSession.metadata.crs}</span>
-              </div>
-              <div className="hud-item">
-                <span>ELEV RANGE:</span>
-                <span className="hud-val">{currentSession.metadata.elevation_min}m - {currentSession.metadata.elevation_max}m</span>
-              </div>
-              <div className="hud-item">
-                <span>MAX STRUCTURE:</span>
-                <span className="hud-val" style={{ color: 'var(--accent-saffron)' }}>{currentSession.metadata.max_structure_height_m}m</span>
-              </div>
-              <div className="hud-item">
-                <span>INFERENCE:</span>
-                <span className="hud-val">{currentSession.metadata.inference_time_s}s</span>
-              </div>
-            </div>
-          )}
-
-          {/* Point Inspection Card (Positioned safely at bottom-left, never overlapping menu options) */}
-          {inspectedPoint && (
-            <div className="surface-point-card">
-              <div className="surface-point-header">
-                <div style={{ fontWeight: '700', color: 'var(--accent-cyan)', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                  <MapPin size={14} />
-                  <span>Surface Point Telemetry</span>
-                </div>
-                <button
-                  onClick={() => setInspectedPoint(null)}
-                  style={{ background: 'transparent', border: 'none', color: 'var(--text-dim)', cursor: 'pointer', display: 'flex', alignItems: 'center' }}
-                  title="Dismiss point telemetry"
-                >
-                  <X size={14} />
-                </button>
-              </div>
-              <div>Elevation: <strong style={{ color: '#fff' }}>{inspectedPoint.elevation_m} meters</strong></div>
-              <div>Above-Ground Height: <strong style={{ color: 'var(--accent-saffron)' }}>{inspectedPoint.structure_height_m} meters</strong></div>
-              <div>Slope: <strong>{inspectedPoint.slope_deg}°</strong> | Aspect: <strong>{inspectedPoint.aspect_deg}°</strong></div>
-              {inspectedPoint.geo_coordinates && (
-                <div style={{ fontSize: '0.67rem', color: 'var(--text-dim)', marginTop: '2px', fontFamily: 'var(--font-mono)' }}>
-                  UTM: E {inspectedPoint.geo_coordinates.easting_or_lon.toFixed(1)}, N {inspectedPoint.geo_coordinates.northing_or_lat.toFixed(1)}
-                </div>
-              )}
-            </div>
-          )}
-
-          {/* 3D Measurement Results Banner (With clean dismiss button) */}
+          {/* 3D Measurement Results Banner (Docked safely right above bottom dock, zero top collision) */}
           {measurementResult && (
             <div className="measurement-banner">
-              <div>📏 3D Distance: <strong>{measurementResult.dist_3d_m}m</strong></div>
-              <div>↔️ Horizontal: <strong>{measurementResult.horiz_dist_m}m</strong></div>
+              <div>📏 3D Dist: <strong>{measurementResult.dist_3d_m}m</strong></div>
+              <div>↔️ Horiz: <strong>{measurementResult.horiz_dist_m}m</strong></div>
               <div>↕️ Height Diff: <strong style={{ color: 'var(--accent-saffron)' }}>{measurementResult.height_diff_m}m</strong></div>
               <div>📐 Slope: <strong>{measurementResult.slope_deg}°</strong></div>
               {profileData && (
@@ -439,14 +449,14 @@ export default function App() {
             onMeasureComplete={handleMeasureComplete}
           />
 
-          {/* Elevation Colorbar Legend */}
+          {/* Elevation Colorbar Legend (Docked bottom-right with safe margins) */}
           {currentSession?.metadata && activeLayer !== 'optical' && (
             <div className="elevation-legend">
               <span style={{ fontWeight: '600' }}>
                 {activeLayer === 'dsm' && 'Elevation (Meters)'}
                 {activeLayer === 'ndsm' && 'Structural Height (Meters)'}
                 {activeLayer === 'slope' && 'Slope Steepness (Degrees)'}
-                {activeLayer === 'residual' && 'LiDAR Residual Error (Meters)'}
+                {activeLayer === 'residual' && 'LiDAR Error (Meters)'}
               </span>
               <div
                 className="legend-bar"
@@ -478,7 +488,7 @@ export default function App() {
             </div>
           )}
 
-          {/* Bottom Flythrough Camera Modes Dock */}
+          {/* Bottom Flythrough Camera Modes Dock (Centered bottom) */}
           <div className="flythrough-dock">
             <button
               className={`dock-btn ${flythroughMode === 'orbit' && !measureMode ? 'active' : ''}`}
@@ -499,7 +509,7 @@ export default function App() {
             <button
               className={`dock-btn ${flythroughMode === 'cinematic' ? 'active' : ''}`}
               onClick={() => { setFlythroughMode('cinematic'); setMeasureMode(false); }}
-              title="Automated Aerial Flyover Loop (For presentations & demonstrations)"
+              title="Automated Aerial Flyover Loop"
             >
               <Video size={14} />
               <span>Cinematic Route</span>
@@ -524,8 +534,55 @@ export default function App() {
           </div>
         </main>
 
-        {/* Right Analytics & Validation Drawer */}
+        {/* Right Analytics Drawer */}
         <aside className="right-drawer">
+          {/* Surface Point Telemetry (Docked cleanly in Right Drawer, IMPOSSIBLE to overlap canvas options!) */}
+          {inspectedPoint ? (
+            <div className="sidebar-section" style={{
+              background: 'linear-gradient(135deg, rgba(0, 229, 255, 0.08), rgba(124, 77, 255, 0.05))',
+              borderBottom: '1px solid var(--border-glow)'
+            }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                <div style={{ fontWeight: '700', color: 'var(--accent-cyan)', display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.82rem' }}>
+                  <MapPin size={15} />
+                  <span>Inspected Surface Point</span>
+                </div>
+                <button
+                  onClick={() => setInspectedPoint(null)}
+                  style={{ background: 'transparent', border: 'none', color: 'var(--text-dim)', cursor: 'pointer', display: 'flex', alignItems: 'center' }}
+                  title="Close point probe"
+                >
+                  <X size={15} />
+                </button>
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', fontSize: '0.78rem' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                  <span style={{ color: 'var(--text-dim)' }}>Elevation (Z):</span>
+                  <strong style={{ color: '#fff' }}>{inspectedPoint.elevation_m} meters</strong>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                  <span style={{ color: 'var(--text-dim)' }}>Structure Height:</span>
+                  <strong style={{ color: 'var(--accent-saffron)' }}>{inspectedPoint.structure_height_m} meters</strong>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                  <span style={{ color: 'var(--text-dim)' }}>Slope / Aspect:</span>
+                  <span><strong>{inspectedPoint.slope_deg}°</strong> ({inspectedPoint.aspect_deg}°)</span>
+                </div>
+                {inspectedPoint.geo_coordinates && (
+                  <div style={{ fontSize: '0.68rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)', marginTop: '4px', background: 'rgba(0,0,0,0.3)', padding: '5px 8px', borderRadius: '4px' }}>
+                    UTM: E {inspectedPoint.geo_coordinates.easting_or_lon.toFixed(1)}, N {inspectedPoint.geo_coordinates.northing_or_lat.toFixed(1)}
+                  </div>
+                )}
+              </div>
+            </div>
+          ) : (
+            <div style={{ padding: '12px 18px', borderBottom: '1px solid var(--border-subtle)', fontSize: '0.72rem', color: 'var(--text-dim)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <MapPin size={14} color="var(--accent-cyan)" />
+              <span>Click anywhere on 3D terrain to probe height & coordinates</span>
+            </div>
+          )}
+
+          {/* Validation Metrics */}
           <div className="sidebar-section">
             <div className="section-title">
               <TrendingUp size={14} color="var(--accent-green)" />
@@ -540,10 +597,35 @@ export default function App() {
         </aside>
       </div>
 
+      {/* Floating Clipboard Toast */}
+      {toastMessage && (
+        <div style={{
+          position: 'fixed',
+          bottom: '24px',
+          right: '24px',
+          background: 'rgba(11, 16, 29, 0.95)',
+          backdropFilter: 'blur(16px)',
+          border: '1px solid var(--accent-cyan)',
+          padding: '12px 20px',
+          borderRadius: '30px',
+          color: '#fff',
+          fontSize: '0.82rem',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '10px',
+          zIndex: 1000,
+          boxShadow: '0 8px 30px rgba(0,0,0,0.8), 0 0 20px rgba(0, 229, 255, 0.3)'
+        }}>
+          <ClipboardPaste size={18} color="var(--accent-cyan)" />
+          <span>{toastMessage}</span>
+        </div>
+      )}
+
       {/* Modals */}
       <UploadModal
         isOpen={showUpload}
-        onClose={() => setShowUpload(false)}
+        initialFile={pastedInitialFile}
+        onClose={() => { setShowUpload(false); setPastedInitialFile(null); }}
         onUploadSuccess={(data) => {
           const fullTextures = {};
           Object.keys(data.textures).forEach((k) => {
@@ -552,6 +634,7 @@ export default function App() {
           data.textures = fullTextures;
           setCurrentSession(data);
           setActiveSampleId('custom');
+          showToast('3D Terrain Reconstruction Complete!');
         }}
       />
 
