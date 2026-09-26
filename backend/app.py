@@ -28,7 +28,7 @@ logging.basicConfig(level=logging.INFO)
 
 app = FastAPI(
     title="DepthWizard - Single-View Height Estimation & 3D Flythrough",
-    description="ISRO SAC SIH 26175 End-to-End Elevation Mapping & 3D Visualization Pipeline",
+    description="End-to-End Elevation Mapping & 3D Visualization Pipeline",
     version="1.0.0"
 )
 
@@ -90,7 +90,6 @@ def get_status():
     return {
         "status": "ONLINE",
         "service": "DepthWizard",
-        "organization": "ISRO SAC SIH 26175",
         "model_backbone": "Depth Anything V2 (Quantized Transformer)",
         "capabilities": [
             "Non-Georeferenced rDSM Generation",

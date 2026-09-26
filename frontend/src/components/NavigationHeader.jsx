@@ -1,14 +1,13 @@
 import React from 'react';
-import { Satellite, Upload, Download, Activity, HelpCircle, Layers } from 'lucide-react';
+import { Satellite, Upload, Download, HelpCircle, Sparkles } from 'lucide-react';
 
 export default function NavigationHeader({ onUploadClick, onExportClick, onHelpClick, backendStatus }) {
   return (
     <header className="header-bar">
       <div className="brand-section">
-        <div className="isro-badge">
-          <span>ISRO SAC</span>
-          <span>•</span>
-          <span>SIH 26175</span>
+        <div className="telemetry-badge">
+          <Satellite size={14} color="var(--accent-cyan)" />
+          <span>v1.0 • Metric DSM</span>
         </div>
         <div>
           <h1 className="brand-title">DepthWizard</h1>
@@ -22,38 +21,46 @@ export default function NavigationHeader({ onUploadClick, onExportClick, onHelpC
           display: 'flex',
           alignItems: 'center',
           gap: '6px',
-          background: 'rgba(0, 230, 118, 0.1)',
-          border: '1px solid rgba(0, 230, 118, 0.3)',
-          padding: '4px 12px',
+          background: 'rgba(0, 230, 118, 0.08)',
+          border: '1px solid rgba(0, 230, 118, 0.25)',
+          padding: '5px 12px',
           borderRadius: '16px',
-          fontSize: '0.75rem',
+          fontSize: '0.72rem',
           color: '#00e676',
-          fontFamily: 'var(--font-mono)'
+          fontFamily: 'var(--font-mono)',
+          letterSpacing: '0.04em'
         }}>
-          <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#00e676', display: 'inline-block', boxShadow: '0 0 8px #00e676' }} />
-          <span>{backendStatus?.status === 'ONLINE' ? 'ONLINE (0.6m Cartosat-2S Ready)' : 'CONNECTING...'}</span>
+          <span style={{
+            width: '7px',
+            height: '7px',
+            borderRadius: '50%',
+            background: '#00e676',
+            display: 'inline-block',
+            boxShadow: '0 0 8px #00e676'
+          }} />
+          <span>{backendStatus?.status === 'ONLINE' ? 'ONLINE • 0.6m Metric Ready' : 'CONNECTING...'}</span>
         </div>
 
         {/* Upload Button */}
-        <button className="dock-btn" onClick={onUploadClick} title="Upload Custom Imagery (PNG, JPG, GeoTIFF)">
-          <Upload size={15} color="var(--accent-cyan)" />
+        <button className="dock-btn upload-nav-btn" onClick={onUploadClick} title="Upload Custom Satellite Imagery (PNG, JPG, GeoTIFF)">
+          <Upload size={14} color="var(--accent-cyan)" />
           <span>Upload Image</span>
         </button>
 
         {/* Export Button */}
-        <button className="dock-btn" onClick={onExportClick} title="Export Calibrated GeoTIFF & 3D Mesh">
-          <Download size={15} color="var(--accent-saffron)" />
+        <button className="dock-btn export-nav-btn" onClick={onExportClick} title="Export Calibrated GeoTIFF & 3D Mesh">
+          <Download size={14} color="var(--accent-saffron)" />
           <span>Export 3D/DSM</span>
         </button>
 
         {/* Documentation / Guide */}
         <button
-          className="dock-btn"
+          className="dock-btn help-nav-btn"
           onClick={onHelpClick}
           style={{ padding: '8px 10px' }}
-          title="Architecture & ISRO Verification Manual"
+          title="Architecture & Verification Manual"
         >
-          <HelpCircle size={16} />
+          <HelpCircle size={15} />
         </button>
       </div>
     </header>

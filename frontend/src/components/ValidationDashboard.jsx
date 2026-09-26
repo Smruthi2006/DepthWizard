@@ -9,15 +9,15 @@ import {
   Legend
 } from 'chart.js';
 import { Bar } from 'react-chartjs-2';
-import { CheckCircle2, ShieldCheck, TrendingUp, AlertTriangle } from 'lucide-react';
+import { ShieldCheck, CheckCircle2, TrendingUp, Layers } from 'lucide-react';
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
 export default function ValidationDashboard({ metrics, metadata, calibration }) {
   if (!metrics) {
     return (
-      <div style={{ padding: '16px', color: 'var(--text-dim)', textAlign: 'center', fontSize: '0.8rem' }}>
-        Select or process a scene to view LiDAR validation metrics.
+      <div style={{ padding: '24px 16px', color: 'var(--text-dim)', textAlign: 'center', fontSize: '0.8rem' }}>
+        Select or process a scene to view LiDAR elevation validation metrics.
       </div>
     );
   }
@@ -31,7 +31,7 @@ export default function ValidationDashboard({ metrics, metadata, calibration }) 
         label: 'Error Residuals Count',
         data: histData.counts,
         backgroundColor: histData.bin_centers.map((c) =>
-          Math.abs(c) <= 2.0 ? 'rgba(0, 230, 118, 0.7)' : 'rgba(255, 82, 82, 0.7)'
+          Math.abs(c) <= 2.0 ? 'rgba(0, 230, 118, 0.75)' : 'rgba(255, 82, 82, 0.7)'
         ),
         borderColor: 'rgba(255, 255, 255, 0.1)',
         borderWidth: 1,
@@ -47,18 +47,18 @@ export default function ValidationDashboard({ metrics, metadata, calibration }) 
       legend: { display: false },
       tooltip: {
         callbacks: {
-          title: (items) => `Error Residual: ${items[0].label}`,
+          title: (items) => `Vertical Residual: ${items[0].label}`,
           label: (item) => `Pixels: ${item.raw.toLocaleString()}`
         }
       }
     },
     scales: {
       x: {
-        grid: { color: 'rgba(255, 255, 255, 0.05)' },
+        grid: { color: 'rgba(255, 255, 255, 0.04)' },
         ticks: { color: '#64748b', font: { size: 9 }, maxTicksLimit: 7 }
       },
       y: {
-        grid: { color: 'rgba(255, 255, 255, 0.05)' },
+        grid: { color: 'rgba(255, 255, 255, 0.04)' },
         ticks: { color: '#64748b', font: { size: 9 } }
       }
     }
@@ -68,28 +68,29 @@ export default function ValidationDashboard({ metrics, metadata, calibration }) 
     <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
       {/* Top Validation Banner */}
       <div style={{
-        background: 'linear-gradient(135deg, rgba(0, 230, 118, 0.12), rgba(0, 229, 255, 0.08))',
-        border: '1px solid rgba(0, 230, 118, 0.35)',
-        borderRadius: '8px',
+        background: 'linear-gradient(135deg, rgba(0, 230, 118, 0.12), rgba(0, 229, 255, 0.06))',
+        border: '1px solid rgba(0, 230, 118, 0.3)',
+        borderRadius: '10px',
         padding: '12px 14px',
         display: 'flex',
         alignItems: 'center',
-        justifyContent: 'space-between'
+        justifyContent: 'space-between',
+        boxShadow: '0 4px 14px rgba(0, 230, 118, 0.08)'
       }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <ShieldCheck size={20} color="#00e676" />
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <ShieldCheck size={22} color="#00e676" />
           <div>
-            <div style={{ fontSize: '0.8rem', fontWeight: '700', color: '#00e676' }}>
-              ISRO SAC Benchmark Verified
+            <div style={{ fontSize: '0.82rem', fontWeight: '700', color: '#00e676', letterSpacing: '-0.01em' }}>
+              LiDAR Benchmark Verified
             </div>
             <div style={{ fontSize: '0.68rem', color: 'var(--text-muted)' }}>
-              Calibration: {calibration?.method || 'SRTM 30m Frequency-Split'}
+              Calibration: {calibration?.method?.replace(/_/g, ' ') || 'Reference DEM Frequency Split'}
             </div>
           </div>
         </div>
         <div style={{ textAlign: 'right' }}>
-          <div style={{ fontSize: '0.68rem', color: 'var(--text-dim)' }}>LE90 Confidence</div>
-          <div style={{ fontSize: '1.1rem', fontWeight: '800', color: 'var(--accent-cyan)', fontFamily: 'var(--font-heading)' }}>
+          <div style={{ fontSize: '0.66rem', color: 'var(--text-dim)', textTransform: 'uppercase' }}>LE90 (90% Conf.)</div>
+          <div style={{ fontSize: '1.15rem', fontWeight: '800', color: 'var(--accent-cyan)', fontFamily: 'var(--font-heading)' }}>
             {metrics.le90_m}m
           </div>
         </div>
@@ -98,7 +99,7 @@ export default function ValidationDashboard({ metrics, metadata, calibration }) 
       {/* 4 Core Accuracy KPI Cards */}
       <div className="metrics-banner">
         <div className="stat-card">
-          <span className="stat-label">RMSE (Meters)</span>
+          <span className="stat-label">RMSE (Vertical)</span>
           <span className="stat-number">{metrics.rmse_m}m</span>
           <span className="stat-sub">Ground Truth LiDAR RMS</span>
         </div>
@@ -123,7 +124,7 @@ export default function ValidationDashboard({ metrics, metadata, calibration }) 
       <div style={{
         background: 'rgba(255, 255, 255, 0.02)',
         border: '1px solid var(--border-subtle)',
-        borderRadius: '8px',
+        borderRadius: '10px',
         padding: '12px'
       }}>
         <div style={{
@@ -136,37 +137,46 @@ export default function ValidationDashboard({ metrics, metadata, calibration }) 
           color: 'var(--text-muted)'
         }}>
           <span>Vertical Error Residual Histogram</span>
-          <span style={{ fontSize: '0.65rem', color: 'var(--accent-green)' }}>Target: 0.0m Center</span>
+          <span style={{ fontSize: '0.65rem', color: 'var(--accent-green)', fontFamily: 'var(--font-mono)' }}>
+            Target: 0.0m
+          </span>
         </div>
         <div style={{ height: '130px', width: '100%' }}>
           <Bar data={chartData} options={chartOptions} />
         </div>
       </div>
 
-      {/* ISRO Multi-Landscape Verification Matrix */}
+      {/* Multi-Landscape Verification Matrix */}
       <div style={{
         background: 'rgba(255, 255, 255, 0.02)',
         border: '1px solid var(--border-subtle)',
-        borderRadius: '8px',
+        borderRadius: '10px',
         padding: '12px'
       }}>
-        <div style={{ fontSize: '0.72rem', fontWeight: '700', color: 'var(--text-muted)', marginBottom: '8px', textTransform: 'uppercase' }}>
-          Landscape Stability Criteria
+        <div style={{
+          fontSize: '0.72rem',
+          fontWeight: '700',
+          color: 'var(--text-muted)',
+          marginBottom: '8px',
+          textTransform: 'uppercase',
+          letterSpacing: '0.05em'
+        }}>
+          Multi-Landscape Stability Criteria
         </div>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', fontSize: '0.75rem' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-            <span style={{ color: 'var(--text-dim)' }}>Urban (Structures & Canyons):</span>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '7px', fontSize: '0.74rem' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <span style={{ color: 'var(--text-dim)' }}>Urban Built-Up (Structures):</span>
             <span style={{ color: 'var(--accent-green)', fontWeight: '600' }}>Sharp Rooftops Preserved</span>
           </div>
-          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <span style={{ color: 'var(--text-dim)' }}>Sparse / Semi-Arid (Plains):</span>
             <span style={{ color: 'var(--accent-green)', fontWeight: '600' }}>Sub-meter Base Stability</span>
           </div>
-          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <span style={{ color: 'var(--text-dim)' }}>Hilly / Mountainous (Ridges):</span>
             <span style={{ color: 'var(--accent-green)', fontWeight: '600' }}>Macro Relief Concordance</span>
           </div>
-          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <span style={{ color: 'var(--text-dim)' }}>Forested (Tree Canopy):</span>
             <span style={{ color: 'var(--accent-green)', fontWeight: '600' }}>Biomass Height Extracted</span>
           </div>

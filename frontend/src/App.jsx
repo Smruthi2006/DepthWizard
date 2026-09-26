@@ -22,7 +22,10 @@ import {
   Building2,
   Mountain,
   Trees,
-  CloudSun
+  CloudSun,
+  X,
+  Activity,
+  ShieldCheck
 } from 'lucide-react';
 
 const API_BASE = 'http://localhost:8000';
@@ -172,11 +175,11 @@ export default function App() {
       <div className="workspace-area">
         {/* Left Sidebar: Benchmark Selection & Rendering Controls */}
         <aside className="left-sidebar">
-          {/* ISRO Benchmark Landscapes */}
+          {/* Benchmark Landscapes */}
           <div className="sidebar-section">
             <div className="section-title">
               <Layers size={14} color="var(--accent-cyan)" />
-              <span>ISRO 4-Landscape Benchmarks</span>
+              <span>Benchmark Landscapes</span>
             </div>
             <div className="landscape-grid">
               {samples.map((s) => (
@@ -187,7 +190,7 @@ export default function App() {
                 >
                   <div className="landscape-icon">{getLandscapeIcon(s.id)}</div>
                   <div className="landscape-name">{s.landscape}</div>
-                  <div className="landscape-type">0.6m Cartosat-2S</div>
+                  <div className="landscape-type">0.6m Resolution</div>
                 </div>
               ))}
             </div>
@@ -302,24 +305,28 @@ export default function App() {
               className={`overlay-btn ${activeLayer === 'optical' ? 'active' : ''}`}
               onClick={() => setActiveLayer('optical')}
             >
+              <Eye size={13} />
               <span>Optical Satellite RGB</span>
             </button>
             <button
               className={`overlay-btn ${activeLayer === 'dsm' ? 'active' : ''}`}
               onClick={() => setActiveLayer('dsm')}
             >
+              <Layers size={13} />
               <span>Metric DSM Heightmap</span>
             </button>
             <button
               className={`overlay-btn ${activeLayer === 'ndsm' ? 'active' : ''}`}
               onClick={() => setActiveLayer('ndsm')}
             >
+              <Building2 size={13} />
               <span>nDSM (Structures/Buildings)</span>
             </button>
             <button
               className={`overlay-btn ${activeLayer === 'slope' ? 'active' : ''}`}
               onClick={() => setActiveLayer('slope')}
             >
+              <TrendingUp size={13} />
               <span>Slope & Hazard Map</span>
             </button>
             {currentSession?.metrics && (
@@ -327,12 +334,13 @@ export default function App() {
                 className={`overlay-btn ${activeLayer === 'residual' ? 'active' : ''}`}
                 onClick={() => setActiveLayer('residual')}
               >
+                <ShieldCheck size={13} />
                 <span>LiDAR Error Residual</span>
               </button>
             )}
           </div>
 
-          {/* Telemetry HUD */}
+          {/* Telemetry HUD (Top-Left) */}
           {currentSession?.metadata && (
             <div className="hud-telemetry">
               <div className="hud-item">
@@ -341,7 +349,7 @@ export default function App() {
               </div>
               <div className="hud-item">
                 <span>GSD:</span>
-                <span className="hud-val">{currentSession.metadata.gsd_m}m / pixel</span>
+                <span className="hud-val">{currentSession.metadata.gsd_m}m / px</span>
               </div>
               <div className="hud-item">
                 <span>CRS:</span>
@@ -362,57 +370,36 @@ export default function App() {
             </div>
           )}
 
-          {/* Point Inspection Card (when user clicks on terrain) */}
+          {/* Point Inspection Card (Positioned safely at bottom-left, never overlapping menu options) */}
           {inspectedPoint && (
-            <div style={{
-              position: 'absolute',
-              top: '16px',
-              right: '400px',
-              background: 'rgba(11, 16, 29, 0.85)',
-              backdropFilter: 'blur(12px)',
-              padding: '12px 16px',
-              borderRadius: '8px',
-              border: '1px solid var(--border-glow)',
-              zIndex: 15,
-              fontSize: '0.75rem',
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '4px',
-              boxShadow: 'var(--shadow-panel)'
-            }}>
-              <div style={{ fontWeight: '700', color: 'var(--accent-cyan)', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                <MapPin size={14} />
-                <span>Surface Point Telemetry</span>
+            <div className="surface-point-card">
+              <div className="surface-point-header">
+                <div style={{ fontWeight: '700', color: 'var(--accent-cyan)', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <MapPin size={14} />
+                  <span>Surface Point Telemetry</span>
+                </div>
+                <button
+                  onClick={() => setInspectedPoint(null)}
+                  style={{ background: 'transparent', border: 'none', color: 'var(--text-dim)', cursor: 'pointer', display: 'flex', alignItems: 'center' }}
+                  title="Dismiss point telemetry"
+                >
+                  <X size={14} />
+                </button>
               </div>
               <div>Elevation: <strong style={{ color: '#fff' }}>{inspectedPoint.elevation_m} meters</strong></div>
               <div>Above-Ground Height: <strong style={{ color: 'var(--accent-saffron)' }}>{inspectedPoint.structure_height_m} meters</strong></div>
               <div>Slope: <strong>{inspectedPoint.slope_deg}°</strong> | Aspect: <strong>{inspectedPoint.aspect_deg}°</strong></div>
               {inspectedPoint.geo_coordinates && (
-                <div style={{ fontSize: '0.68rem', color: 'var(--text-dim)', marginTop: '2px' }}>
+                <div style={{ fontSize: '0.67rem', color: 'var(--text-dim)', marginTop: '2px', fontFamily: 'var(--font-mono)' }}>
                   UTM: E {inspectedPoint.geo_coordinates.easting_or_lon.toFixed(1)}, N {inspectedPoint.geo_coordinates.northing_or_lat.toFixed(1)}
                 </div>
               )}
             </div>
           )}
 
-          {/* 3D Measurement Results Banner */}
+          {/* 3D Measurement Results Banner (With clean dismiss button) */}
           {measurementResult && (
-            <div style={{
-              position: 'absolute',
-              top: '74px',
-              left: '50%',
-              transform: 'translateX(-50%)',
-              background: 'rgba(11, 16, 29, 0.9)',
-              backdropFilter: 'blur(12px)',
-              padding: '10px 18px',
-              borderRadius: '24px',
-              border: '1px solid var(--accent-saffron)',
-              zIndex: 15,
-              display: 'flex',
-              alignItems: 'center',
-              gap: '16px',
-              fontSize: '0.78rem'
-            }}>
+            <div className="measurement-banner">
               <div>📏 3D Distance: <strong>{measurementResult.dist_3d_m}m</strong></div>
               <div>↔️ Horizontal: <strong>{measurementResult.horiz_dist_m}m</strong></div>
               <div>↕️ Height Diff: <strong style={{ color: 'var(--accent-saffron)' }}>{measurementResult.height_diff_m}m</strong></div>
@@ -424,9 +411,16 @@ export default function App() {
                   style={{ padding: '4px 10px', fontSize: '0.72rem', background: 'var(--accent-cyan)', color: '#000' }}
                 >
                   <TrendingUp size={12} />
-                  <span>View Cross-Section</span>
+                  <span>Cross-Section</span>
                 </button>
               )}
+              <button
+                onClick={() => setMeasurementResult(null)}
+                style={{ background: 'transparent', border: 'none', color: 'var(--text-dim)', cursor: 'pointer', display: 'flex', alignItems: 'center', marginLeft: '4px' }}
+                title="Dismiss measurement"
+              >
+                <X size={14} />
+              </button>
             </div>
           )}
 
@@ -530,12 +524,12 @@ export default function App() {
           </div>
         </main>
 
-        {/* Right Analytics & ISRO Validation Drawer */}
+        {/* Right Analytics & Validation Drawer */}
         <aside className="right-drawer">
           <div className="sidebar-section">
             <div className="section-title">
               <TrendingUp size={14} color="var(--accent-green)" />
-              <span>ISRO Accuracy & LiDAR Validation</span>
+              <span>Topographic Accuracy & Validation</span>
             </div>
             <ValidationDashboard
               metrics={currentSession?.metrics}

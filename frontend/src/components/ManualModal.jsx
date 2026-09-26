@@ -1,5 +1,5 @@
 import React from 'react';
-import { X, BookOpen, Layers, CheckCircle2, Cpu, BarChart2 } from 'lucide-react';
+import { X, BookOpen, Layers, Cpu, BarChart2 } from 'lucide-react';
 
 export default function ManualModal({ isOpen, onClose }) {
   if (!isOpen) return null;
@@ -11,7 +11,7 @@ export default function ManualModal({ isOpen, onClose }) {
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             <BookOpen size={22} color="var(--accent-cyan)" />
             <h3 style={{ fontFamily: 'var(--font-heading)', fontSize: '1.25rem' }}>
-              DepthWizard Technical Manual & ISRO Verification
+              DepthWizard Technical Architecture & Verification Manual
             </h3>
           </div>
           <button onClick={onClose} style={{ background: 'transparent', border: 'none', color: 'var(--text-dim)', cursor: 'pointer' }}>
@@ -28,7 +28,7 @@ export default function ManualModal({ isOpen, onClose }) {
             </div>
             <p>
               Employs <strong>Depth Anything V2</strong> (Vision Transformer) with ONNX Runtime acceleration. 
-              The backbone processes single-view optical satellite imagery (0.6m GSD Cartosat-2S or standard RGB) 
+              The backbone processes single-view optical satellite imagery (0.6m GSD or standard RGB) 
               to output relative disparity/depth representations with sharp architectural edge preservation.
             </p>
           </div>
@@ -53,7 +53,7 @@ export default function ManualModal({ isOpen, onClose }) {
           <div style={{ background: 'rgba(255, 255, 255, 0.02)', padding: '14px', borderRadius: '8px', border: '1px solid var(--border-subtle)' }}>
             <div style={{ fontWeight: '700', color: 'var(--text-main)', fontSize: '0.9rem', marginBottom: '6px', display: 'flex', alignItems: 'center', gap: '6px' }}>
               <BarChart2 size={16} color="var(--accent-green)" />
-              3. Accuracy Validation Criteria (ISRO SAC 50% Weightage)
+              3. Accuracy Validation Criteria (LiDAR Ground Truth)
             </div>
             <p>
               Evaluated against true LiDAR ground truth across 4 benchmark landscapes:
