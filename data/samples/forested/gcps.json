@@ -1,0 +1,23 @@
+[
+  {
+    "id": "GCP_1",
+    "x": 80,
+    "y": 80,
+    "z": 339.72,
+    "type": "Canopy_Tower_North"
+  },
+  {
+    "id": "GCP_2",
+    "x": 250,
+    "y": 270,
+    "z": 326.25,
+    "type": "Forest_Clearing_Ground"
+  },
+  {
+    "id": "GCP_3",
+    "x": 440,
+    "y": 420,
+    "z": 354.45,
+    "type": "Canopy_Ridge_South"
+  }
+]

@@ -1,0 +1,23 @@
+[
+  {
+    "id": "GCP_1",
+    "x": 50,
+    "y": 50,
+    "z": 215.52,
+    "type": "Plateau_Northwest"
+  },
+  {
+    "id": "GCP_2",
+    "x": 210,
+    "y": 210,
+    "z": 221.95,
+    "type": "Homestead_Base"
+  },
+  {
+    "id": "GCP_3",
+    "x": 460,
+    "y": 460,
+    "z": 206.87,
+    "type": "Plateau_Southeast"
+  }
+]

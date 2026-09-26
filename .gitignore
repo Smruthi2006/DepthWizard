@@ -1,0 +1,22 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.env
+venv/
+env/
+.venv/
+
+# Node
+node_modules/
+.npm
+npm-debug.log*
+
+# Data outputs (cache)
+data/outputs/*
+!data/outputs/.gitkeep
+
+# OS
+Thumbs.db
+.DS_Store

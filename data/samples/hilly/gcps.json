@@ -1,0 +1,30 @@
+[
+  {
+    "id": "GCP_1",
+    "x": 60,
+    "y": 60,
+    "z": 757.83,
+    "type": "Valley_Base"
+  },
+  {
+    "id": "GCP_2",
+    "x": 180,
+    "y": 190,
+    "z": 962.05,
+    "type": "Mountain_Peak_A"
+  },
+  {
+    "id": "GCP_3",
+    "x": 390,
+    "y": 340,
+    "z": 804.28,
+    "type": "Mountain_Peak_B"
+  },
+  {
+    "id": "GCP_4",
+    "x": 450,
+    "y": 90,
+    "z": 491.83,
+    "type": "Eastern_Ridge"
+  }
+]

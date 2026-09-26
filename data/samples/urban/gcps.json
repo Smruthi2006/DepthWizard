@@ -1,0 +1,44 @@
+[
+  {
+    "id": "GCP_1",
+    "x": 40,
+    "y": 40,
+    "z": 58.7,
+    "type": "Road_Intersection"
+  },
+  {
+    "id": "GCP_2",
+    "x": 260,
+    "y": 40,
+    "z": 56.93,
+    "type": "Road_Intersection"
+  },
+  {
+    "id": "GCP_3",
+    "x": 480,
+    "y": 40,
+    "z": 56.42,
+    "type": "Road_Intersection"
+  },
+  {
+    "id": "GCP_4",
+    "x": 40,
+    "y": 260,
+    "z": 54.02,
+    "type": "Road_Intersection"
+  },
+  {
+    "id": "GCP_5",
+    "x": 260,
+    "y": 260,
+    "z": 52.25,
+    "type": "Road_Intersection"
+  },
+  {
+    "id": "GCP_6",
+    "x": 480,
+    "y": 480,
+    "z": 55.62,
+    "type": "Road_Intersection"
+  }
+]

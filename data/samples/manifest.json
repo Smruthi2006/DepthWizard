@@ -1,0 +1,210 @@
+[
+  {
+    "id": "urban",
+    "title": "Urban Built-up Environment (ISRO SAC Simulation)",
+    "landscape": "Urban",
+    "resolution_m": 0.6,
+    "crs": "EPSG:32643",
+    "bounds": {
+      "left": 267500.0,
+      "top": 2551000.0,
+      "right": 267807.2,
+      "bottom": 2550692.8
+    },
+    "elevation_range": [
+      49.5,
+      109.7
+    ],
+    "mean_elevation": 62.4,
+    "rgb_png": "data/samples\\urban\\optical_rgb.png",
+    "rgb_tif": "data/samples\\urban\\optical_rgb.tif",
+    "ref_dsm": "data/samples\\urban\\reference_dsm_lidar.tif",
+    "coarse_dem": "data/samples\\urban\\coarse_dem_srtm30m.tif",
+    "gcps": [
+      {
+        "id": "GCP_1",
+        "x": 40,
+        "y": 40,
+        "z": 58.7,
+        "type": "Road_Intersection"
+      },
+      {
+        "id": "GCP_2",
+        "x": 260,
+        "y": 40,
+        "z": 56.93,
+        "type": "Road_Intersection"
+      },
+      {
+        "id": "GCP_3",
+        "x": 480,
+        "y": 40,
+        "z": 56.42,
+        "type": "Road_Intersection"
+      },
+      {
+        "id": "GCP_4",
+        "x": 40,
+        "y": 260,
+        "z": 54.02,
+        "type": "Road_Intersection"
+      },
+      {
+        "id": "GCP_5",
+        "x": 260,
+        "y": 260,
+        "z": 52.25,
+        "type": "Road_Intersection"
+      },
+      {
+        "id": "GCP_6",
+        "x": 480,
+        "y": 480,
+        "z": 55.62,
+        "type": "Road_Intersection"
+      }
+    ]
+  },
+  {
+    "id": "sparse",
+    "title": "Sparse Semi-Arid Plateau & Outcrops (Low Relief)",
+    "landscape": "Sparse",
+    "resolution_m": 0.6,
+    "crs": "EPSG:32643",
+    "bounds": {
+      "left": 195000.0,
+      "top": 2890000.0,
+      "right": 195307.2,
+      "bottom": 2889692.8
+    },
+    "elevation_range": [
+      204.0,
+      237.7
+    ],
+    "mean_elevation": 212.1,
+    "rgb_png": "data/samples\\sparse\\optical_rgb.png",
+    "rgb_tif": "data/samples\\sparse\\optical_rgb.tif",
+    "ref_dsm": "data/samples\\sparse\\reference_dsm_lidar.tif",
+    "coarse_dem": "data/samples\\sparse\\coarse_dem_srtm30m.tif",
+    "gcps": [
+      {
+        "id": "GCP_1",
+        "x": 50,
+        "y": 50,
+        "z": 215.52,
+        "type": "Plateau_Northwest"
+      },
+      {
+        "id": "GCP_2",
+        "x": 210,
+        "y": 210,
+        "z": 221.95,
+        "type": "Homestead_Base"
+      },
+      {
+        "id": "GCP_3",
+        "x": 460,
+        "y": 460,
+        "z": 206.87,
+        "type": "Plateau_Southeast"
+      }
+    ]
+  },
+  {
+    "id": "hilly",
+    "title": "Rugged Mountainous Ridge & Valley (High Relief)",
+    "landscape": "Hilly",
+    "resolution_m": 0.6,
+    "crs": "EPSG:32643",
+    "bounds": {
+      "left": 712000.0,
+      "top": 3421000.0,
+      "right": 712307.2,
+      "bottom": 3420692.8
+    },
+    "elevation_range": [
+      469.2,
+      977.1
+    ],
+    "mean_elevation": 693.6,
+    "rgb_png": "data/samples\\hilly\\optical_rgb.png",
+    "rgb_tif": "data/samples\\hilly\\optical_rgb.tif",
+    "ref_dsm": "data/samples\\hilly\\reference_dsm_lidar.tif",
+    "coarse_dem": "data/samples\\hilly\\coarse_dem_srtm30m.tif",
+    "gcps": [
+      {
+        "id": "GCP_1",
+        "x": 60,
+        "y": 60,
+        "z": 757.83,
+        "type": "Valley_Base"
+      },
+      {
+        "id": "GCP_2",
+        "x": 180,
+        "y": 190,
+        "z": 962.05,
+        "type": "Mountain_Peak_A"
+      },
+      {
+        "id": "GCP_3",
+        "x": 390,
+        "y": 340,
+        "z": 804.28,
+        "type": "Mountain_Peak_B"
+      },
+      {
+        "id": "GCP_4",
+        "x": 450,
+        "y": 90,
+        "z": 491.83,
+        "type": "Eastern_Ridge"
+      }
+    ]
+  },
+  {
+    "id": "forested",
+    "title": "Dense Forest Canopy & Undulating Slope (Biomass Relief)",
+    "landscape": "Forested",
+    "resolution_m": 0.6,
+    "crs": "EPSG:32643",
+    "bounds": {
+      "left": 640000.0,
+      "top": 1285000.0,
+      "right": 640307.2,
+      "bottom": 1284692.8
+    },
+    "elevation_range": [
+      325.7,
+      369.2
+    ],
+    "mean_elevation": 344.3,
+    "rgb_png": "data/samples\\forested\\optical_rgb.png",
+    "rgb_tif": "data/samples\\forested\\optical_rgb.tif",
+    "ref_dsm": "data/samples\\forested\\reference_dsm_lidar.tif",
+    "coarse_dem": "data/samples\\forested\\coarse_dem_srtm30m.tif",
+    "gcps": [
+      {
+        "id": "GCP_1",
+        "x": 80,
+        "y": 80,
+        "z": 339.72,
+        "type": "Canopy_Tower_North"
+      },
+      {
+        "id": "GCP_2",
+        "x": 250,
+        "y": 270,
+        "z": 326.25,
+        "type": "Forest_Clearing_Ground"
+      },
+      {
+        "id": "GCP_3",
+        "x": 440,
+        "y": 420,
+        "z": 354.45,
+        "type": "Canopy_Ridge_South"
+      }
+    ]
+  }
+]
