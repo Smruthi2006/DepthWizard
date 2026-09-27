@@ -6,47 +6,47 @@
 ---
 
 ## 🚀 Overview
-**DepthWizard** is an end-to-end, production-grade geospatial software platform that transforms **single-view optical remote-sensing imagery** into high-precision, metric Digital Surface Models (DSMs) and provides an interactive 3D WebGL flythrough environment for real-time terrain navigation, structural height measurement, and hazard analysis.
+**DepthWizard** is an end-to-end, production-grade geospatial and computer vision platform that converts **single-view optical remote-sensing imagery** (0.6m GSD Cartosat-2S or standard high-resolution RGB satellite photos) into high-precision, metric **Digital Surface Models (DSMs)** and an interactive **3D WebGL Flythrough** environment with real-time terrain navigation, structural height measurement, and hazard analysis.
 
-Built specifically for **ISRO Cartosat-2S (0.6m GSD)** and standard satellite imagery, DepthWizard overcomes the foundational domain gap between natural monocular depth estimation and top-down aerial remote sensing.
+DepthWizard bridges the foundational domain gap between natural egocentric monocular depth estimation and top-down aerial remote sensing using transformer depth backbones, frequency-split calibration, and high-performance WebGL rendering.
 
 ---
 
 ## ✨ Key Features
 
 ### 1. High-Fidelity Elevation Extraction
-- Powered by a state-of-the-art **Depth Anything V2** monocular transformer backbone accelerated via **ONNX Runtime**.
+- Powered by a **Depth Anything V2** monocular vision transformer backbone optimized with **ONNX Runtime**.
 - High-frequency edge-preserving bilateral filtering that sharpens building footprints, rooftops, and ridgelines.
-- Sub-3 second CPU latency with zero complex PyTorch build hurdles.
+- Sub-2 second inference latency on CPU with zero heavy PyTorch dependencies required at runtime.
 
 ### 2. Multi-Mode Metric Scale Calibration
-- **Coarse DEM Anchoring (SRTM 30m / Copernicus DEM 30m):** Uses Frequency-Split Hybrid Fusion to anchor macro-topography to the geodetic reference while maintaining sub-meter building heights.
-- **Ground Control Points (GCPs):** 3D planar tilt and scale estimation with minimal survey control points.
-- **Scene-Level Semantic Priors:** Translates relative rDSM to real-world metric scales for non-georeferenced images.
+- **Coarse DEM Anchoring (SRTM 30m / Copernicus DEM 30m):** Uses Frequency-Split Hybrid Fusion (Butterworth low-pass coarse DEM + high-pass relative depth) to anchor macro-topography to the geodetic reference while maintaining sub-meter building heights.
+- **Ground Control Points (GCPs):** Planar tilt ($\alpha, \beta, \gamma$) and linear scale estimation from sparse survey points.
+- **Scene-Level Semantic Priors:** Translates relative rDSM to real-world metric scales for arbitrary non-georeferenced images.
 
 ### 3. Advanced Geospatial & Structural Analytics
-- **nDSM Structural Separation:** Isolates building and tree canopy heights from bare-earth DTM via progressive morphological filtering.
-- **Slope & Aspect Hazard Maps:** Real-time calculation of terrain gradient in degrees to flag landslide and runoff hazard zones.
-- **Interactive 2D Elevation Transects:** Click-and-drag cross-section elevation profiling.
+- **nDSM Structural Separation:** Isolates building and tree canopy heights from bare-earth DTM via progressive morphological filtering (White Top-Hat opening).
+- **Slope & Aspect Hazard Maps:** Real-time calculation of terrain gradient in degrees and aspect direction to flag landslide and runoff hazard zones.
+- **Interactive 2D Elevation Transects:** Click-and-drag cross-section elevation profiling with distance and slope statistics.
+- **Surface Point Inspector:** Instant readout of elevation (m), structural height (nDSM), slope angle, and geographic coordinates without obscuring the 3D viewport.
 
-### 4. Immersive 3D Flythrough & Visualization (Three.js)
-- **High-Performance 3D Displacement Mesh:** Dynamic vertex displacement rendering at 60 FPS.
-- **Orthophoto Texture Draping:** Satellite RGB imagery seamlessly mapped onto 3D relief.
-- **4 Camera Navigation Modes:** Orbit turntable, First-Person Drone flight (`W/A/S/D`), Cinematic automated flyover loop, and Nadir Ortho view.
-- **3D Measurement Tool:** Measure 3D distances, building roof heights ($\Delta Z$), and slope angles with live visual laser lines.
+### 4. Immersive 3D Flythrough & Visualization (Three.js WebGL)
+- **Zero-Overlap Aerospace UI:** Clean floating HUD with telemetry dock, top layer switcher, and collapsible diagnostic drawers.
+- **High-Performance 3D Displacement Mesh:** Dynamic vertex displacement rendering at a smooth 60 FPS.
+- **Orthophoto Texture Draping:** Satellite RGB imagery seamlessly mapped onto 3D relief with hot-swappable layers (DSM, nDSM, Slope, LiDAR Error).
+- **4 Camera Navigation Modes:** Orbit Turntable, First-Person Drone flight (`W/A/S/D`), Automated Cinematic Flyover route, and Nadir Ortho view.
+- **3D Measurement Tool:** Measure 3D distances, building roof heights ($\Delta Z$), and slope angles with real-time visual laser lines.
 
-### 5. ISRO SAC 4-Landscape Benchmark Suite
-Pre-packaged, validated benchmarks with paired Cartosat-2S optical imagery, LiDAR reference DSMs, coarse DEMs, and GCPs:
-1. 🏙️ **Urban:** High-density buildings, roads, and rooftops.
-2. 🏜️ **Sparse / Semi-Arid:** Open plains and isolated homesteads.
-3. ⛰️ **Hilly / Mountainous:** Steep ridges and valley spurs (up to 45° slopes).
-4. 🌲 **Forested:** Organic tree canopies and biomass height variance.
+### 5. Multi-Source Imagery & Clipboard Paste Support
+- **Clipboard `Ctrl+V` Paste:** Copy any satellite image directly from Google Images, web browsers, or screenshot tools and paste it directly into DepthWizard.
+- **Local File Upload:** Drag-and-drop or browse GeoTIFF and RGB images.
+- **Pre-Packaged 4-Landscape Benchmark Suite:** Validated benchmark scenes for Urban, Sparse / Semi-Arid, Hilly / Mountainous, and Forested terrains.
 
 ### 6. Full Deliverables & Export Suite
 - **GeoTIFF (.tif):** 32-bit floating point metric DSM with complete CRS and GeoTransform.
-- **Wavefront OBJ (.obj + .mtl):** 3D textured mesh for Blender, Unity, and CAD.
-- **Stanford PLY (.ply):** Colored 3D point cloud.
-- **ISRO Validation Certificate (.json):** Machine-readable evaluation report.
+- **Wavefront OBJ (.obj + .mtl):** 3D textured mesh ready for Blender, Unity, Unreal Engine, and CAD.
+- **Stanford PLY (.ply):** Georeferenced colored 3D point cloud.
+- **Validation Certificate (.json):** Machine-readable evaluation report with RMSE, MAE, Pearson $r$, $R^2$, and LE90.
 
 ---
 
