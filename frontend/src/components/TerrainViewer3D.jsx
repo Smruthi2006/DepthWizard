@@ -229,6 +229,13 @@ export default function TerrainViewer3D({
       side: THREE.DoubleSide
     });
 
+    // Immediately attach texture if available in cache
+    const currentTextureUrl = textures ? (textures[activeLayer] || textures.optical) : null;
+    if (currentTextureUrl && textureCacheRef.current[currentTextureUrl]) {
+      material.map = textureCacheRef.current[currentTextureUrl];
+      material.needsUpdate = true;
+    }
+
     const terrainMesh = new THREE.Mesh(geometry, material);
     terrainMesh.receiveShadow = true;
     terrainMesh.castShadow = true;
@@ -267,7 +274,7 @@ export default function TerrainViewer3D({
         (err) => console.error('Failed to load texture layer:', err)
       );
     }
-  }, [textures, activeLayer]);
+  }, [textures, activeLayer, meshData]);
 
   // Mouse & Keyboard Interaction Handlers
   const handleMouseDown = (e) => {

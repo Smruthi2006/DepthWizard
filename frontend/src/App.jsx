@@ -113,6 +113,7 @@ export default function App() {
   const processScene = async (sampleId, calibMethod = 'dem') => {
     setLoading(true);
     setActiveSampleId(sampleId);
+    setActiveLayer('optical');
     setMeasurementResult(null);
     setInspectedPoint(null);
     try {
@@ -366,6 +367,39 @@ export default function App() {
 
         {/* Center 3D Interactive Viewport (Zero Overlaps) */}
         <main className="viewport-container">
+          {/* Loading Hologram Overlay */}
+          {loading && (
+            <div style={{
+              position: 'absolute',
+              inset: 0,
+              background: 'rgba(6, 8, 14, 0.75)',
+              backdropFilter: 'blur(8px)',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+              zIndex: 40,
+              gap: '14px'
+            }}>
+              <div style={{
+                width: '46px',
+                height: '46px',
+                borderRadius: '50%',
+                border: '3px solid rgba(0, 229, 255, 0.15)',
+                borderTopColor: 'var(--accent-cyan)',
+                animation: 'spin 0.8s linear infinite'
+              }} />
+              <div style={{ textAlign: 'center' }}>
+                <div style={{ fontFamily: 'var(--font-heading)', fontWeight: '700', fontSize: '1rem', color: '#fff' }}>
+                  Estimating Elevation & Generating 3D Mesh
+                </div>
+                <div style={{ fontSize: '0.75rem', color: 'var(--accent-cyan)', marginTop: '4px', letterSpacing: '0.04em' }}>
+                  {activeSampleId.toUpperCase()} • 0.6m High-Precision Relief
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* Top Layer Switcher Dock (Clean, centered, zero obstruction) */}
           <div className="floating-overlay-top">
             <button
